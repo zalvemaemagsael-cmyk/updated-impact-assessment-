@@ -412,7 +412,7 @@ if supabase_configured():
             using_demo_data = True
     except Exception as e:
         st.warning(
-            "Could not load data from Supabase, so demo data is being shown instead.\n\n"
+            "⚠️ Could not load data from Supabase, so demo data is being shown instead.\n\n"
             f"Details: {e}"
         )
         REPORTS = DEMO_REPORTS
@@ -422,9 +422,7 @@ else:
     using_demo_data = True
 
 if using_demo_data:
-    st.info("Running on **demo data** — add SUPABASE_URL / SUPABASE_KEY to `.streamlit/secrets.toml` to use live data.")
-
-VERDICT_OPTIONS = ["Accomplished", "Partially accomplished", "Not accomplished"]
+    st.info("📦 Running on **demo data** — add SUPABASE_URL / SUPABASE_KEY to `.streamlit/secrets.toml` to use live data.")
 
 def verdict_badge(v):
     v_lower = v.lower()
@@ -498,14 +496,6 @@ def chg_html(baseline, current, is_money=True):
     cls = "pc-chg-up" if pct > 0 else ("pc-chg-down" if pct < 0 else "pc-chg-flat")
     sign = "+" if pct >= 0 else ""
     return f'<span class="{cls}">{sign}{pct}%</span>'
-
-def default_verdict_index(dv):
-    dv_lower = dv.lower()
-    if dv_lower == "accomplished":
-        return 0
-    elif dv_lower == "partially accomplished":
-        return 1
-    return 2
 
 # ── UI ────────────────────────────────────────────────────────────────────────
 
@@ -776,40 +766,24 @@ if nonquant_outputs:
 
     nq_pairs = [nonquant_outputs[i:i+2] for i in range(0, len(nonquant_outputs), 2)]
 
-    # Store verdicts in session state
-    if "nq_verdicts" not in st.session_state:
-        st.session_state["nq_verdicts"] = {}
-
-    state_key_prefix = f"{sel_msme}_{sel_sem}"
-
-    for pair_idx, pair in enumerate(nq_pairs):
+    for pair in nq_pairs:
         cols = st.columns(2)
-        for col_idx, (col, item) in enumerate(zip(cols, pair)):
+        for col, item in zip(cols, pair):
             with col:
-                state_key = f"{state_key_prefix}_nq_{pair_idx}_{col_idx}"
-                default_idx = default_verdict_index(item["default_verdict"])
-
-                chosen = st.selectbox(
-                    f"Verdict for: {item['title'][:30]}",
-                    VERDICT_OPTIONS,
-                    index=default_idx,
-                    key=state_key,
-                    label_visibility="collapsed"
-                )
-
-                border_cls = card_border(chosen)
+                verdict = item["default_verdict"]
+                border_cls = card_border(verdict)
                 st.markdown(f"""
-<div class="output-card {border_cls}" style="margin-top:-8px;">
+<div class="output-card {border_cls}">
   <div class="card-type">Non-Quantifiable</div>
   <div class="card-title">{item['title']}</div>
   <div class="nq-actual-label">Actual accomplishment</div>
   <div class="nq-actual-text">{item['actual']}</div>
   <div style="display:flex; align-items:center; gap:8px; margin-top:6px;">
-    <span class="verdict-label-inline">Verdict (PSTO):</span>
+    <span class="verdict-label-inline">Verdict:</span>
+    {badge_html(verdict)}
   </div>
 </div>
 """, unsafe_allow_html=True)
-                st.markdown(f'<div style="margin-top:4px;">{badge_html(chosen)}</div>', unsafe_allow_html=True)
 
 # ── Overall semester verdict ─────────────────────────────────────────────────
 overall = sem_data["overall"]
@@ -823,7 +797,7 @@ else:
 st.markdown(f"""
 <div class="overall-row">
   <div style="display:flex;align-items:center;gap:8px;">
-    <span style="font-size:16px;"></span>
+    <span style="font-size:16px;">📊</span>
     <span class="overall-label">Overall semester verdict</span>
   </div>
   {overall_html}

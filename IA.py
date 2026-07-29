@@ -412,7 +412,7 @@ if supabase_configured():
             using_demo_data = True
     except Exception as e:
         st.warning(
-            "⚠️ Could not load data from Supabase, so demo data is being shown instead.\n\n"
+            "Could not load data from Supabase, so demo data is being shown instead.\n\n"
             f"Details: {e}"
         )
         REPORTS = DEMO_REPORTS
@@ -422,7 +422,7 @@ else:
     using_demo_data = True
 
 if using_demo_data:
-    st.info("📦 Running on **demo data** — add SUPABASE_URL / SUPABASE_KEY to `.streamlit/secrets.toml` to use live data.")
+    st.info("Running on **demo data** — add SUPABASE_URL / SUPABASE_KEY to `.streamlit/secrets.toml` to use live data.")
 
 VERDICT_OPTIONS = ["Accomplished", "Partially accomplished", "Not accomplished"]
 
@@ -823,7 +823,7 @@ else:
 st.markdown(f"""
 <div class="overall-row">
   <div style="display:flex;align-items:center;gap:8px;">
-    <span style="font-size:16px;">📊</span>
+    <span style="font-size:16px;"></span>
     <span class="overall-label">Overall semester verdict</span>
   </div>
   {overall_html}
